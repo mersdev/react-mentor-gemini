@@ -7,5 +7,5 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["lucide-react"],
   },
-  base: "/your-repository-name/",
+  base: "/react-mentor-gemini/",
 });
