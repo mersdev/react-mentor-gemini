@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { Send, Trash2, Brain } from "lucide-react";
 import { Message } from "../types";
-import { generateResponse } from "../utils/gemini";
+import { generateResponse, resetGeminiChat } from "../utils/gemini";
 import { saveMessages, loadMessages } from "../utils/storage";
 
 interface Props {
@@ -69,11 +69,19 @@ export function GoogleGeminiChat({ onContextUpdate, setInputValue }: Props) {
     }
   };
 
-  const clearChat = () => {
-    setMessages([]);
-    setInput("");
-    localStorage.removeItem("chat_history");
-    onContextUpdate("");
+  const clearChat = async () => {
+    try {
+      // Clear UI state
+      setMessages([]);
+      setInput("");
+      localStorage.removeItem("chat_history");
+      onContextUpdate("");
+
+      // Reset Gemini chat session
+      await resetGeminiChat();
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+    }
   };
 
   return (

@@ -45,9 +45,11 @@ function App() {
             <LearningRoadmap
               context={chatContext}
               onConceptClick={(concept) => {
-                setChatInput(
-                  `Tell me more about ${concept} and provide some examples.`
-                );
+                setChatInput(`Tell me more about ${concept} with examples.`);
+
+                const contextualPrompt = `Based on our discussion about ${chatContext}, explain ${concept} in detail, showing its relevance to ${chatContext} and provide specific examples.`;
+
+                setChatContext(contextualPrompt);
               }}
             />
           </div>
