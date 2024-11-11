@@ -13,8 +13,8 @@ export const MarkdownComponents = {
 
     return inline ? (
       <code
-        className="px-2 py-0.5 mx-0.5 rounded bg-gray-100 dark:bg-gray-800 
-        font-mono text-sm border border-gray-200 dark:border-gray-700
+        className="px-2 py-1 mx-0.5 rounded-md bg-gray-50 dark:bg-slate-900 
+        font-mono text-sm border border-gray-200 dark:border-2 dark:border-purple-800/50
         transition-all duration-300 hover:scale-[1.02]"
       >
         {children}
@@ -24,8 +24,8 @@ export const MarkdownComponents = {
         {language && (
           <div
             className="flex items-center justify-between px-4 py-2 
-            bg-gray-100 dark:bg-gray-800 border-b border-gray-200 
-            dark:border-gray-700 rounded-t-lg"
+            bg-gray-50 dark:bg-slate-900 border border-gray-200 
+            dark:border-2 dark:border-purple-800/50 rounded-t-xl"
           >
             <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
               {language}
@@ -33,8 +33,9 @@ export const MarkdownComponents = {
           </div>
         )}
         <pre
-          className={`${className} rounded-lg p-4 bg-gray-100 dark:bg-gray-800 
-          overflow-x-auto border border-gray-200 dark:border-gray-700`}
+          className={`${className} rounded-xl p-4 bg-gray-50 dark:bg-slate-900 
+          overflow-x-auto border border-gray-200 dark:border-2 dark:border-purple-800/50
+          ${language ? "rounded-t-none" : ""}`}
         >
           <code className="text-sm font-mono">{children}</code>
         </pre>

@@ -98,14 +98,9 @@ export function GoogleGeminiChat({
   };
 
   return (
-    <motion.div
-      className="flex flex-col h-full"
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
-    >
-      {/* Chat Header */}
-      <div className="flex items-center px-4 py-3 bg-white/90 dark:bg-gray-800/90 border-b border-blue-100 dark:border-blue-900">
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="flex items-center px-4 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-2 dark:border-purple-800/50">
         <div className="flex-1 flex items-center space-x-3">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center transform hover:rotate-3 transition-transform">
             <Brain className="h-6 w-6 text-white" />
@@ -140,8 +135,8 @@ export function GoogleGeminiChat({
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
+      {/* Messages Container - Scrollable */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
         {view === "chat" ? (
           // Chat messages section
           <div className="h-full flex flex-col">
@@ -179,11 +174,11 @@ export function GoogleGeminiChat({
 
                       {/* Message Content Container */}
                       <motion.div
-                        className={`relative rounded-xl px-4 py-2 shadow-sm
+                        className={`relative rounded-xl px-4 py-3 shadow-sm
                           ${
                             message.role === "user"
                               ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white ml-auto"
-                              : "bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700"
+                              : "bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-0"
                           }
                         `}
                         whileHover={{ scale: 1.01 }}
@@ -307,41 +302,40 @@ export function GoogleGeminiChat({
               )}
               <div ref={messagesEndRef} />
             </div>
-
-            {/* Chat Input */}
-            <div className="p-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-t border-blue-100 dark:border-blue-900">
-              <form
-                onSubmit={handleSubmit}
-                className="flex items-center space-x-2"
-              >
-                <input
-                  type="text"
-                  value={inputValue || ""}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Type a message..."
-                  className="flex-1 rounded-xl px-4 py-2 bg-blue-50 dark:bg-gray-900/50 
-                    border border-blue-100 dark:border-blue-900
-                    focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 
-                    text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                />
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 
-                    hover:to-purple-600 disabled:from-blue-400 disabled:to-purple-400
-                    text-white rounded-xl transition-all duration-300 focus:outline-none 
-                    focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 
-                    dark:focus:ring-offset-gray-800 hover:scale-105"
-                >
-                  <Send className="h-5 w-5" />
-                </button>
-              </form>
-            </div>
           </div>
         ) : (
           <NotesView messages={messages} />
         )}
       </div>
-    </motion.div>
+
+      {/* Input Container - Fixed at bottom */}
+      <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-2 dark:border-purple-800/50">
+        <div className="max-w-4xl mx-auto flex items-center space-x-4">
+          <input
+            type="text"
+            value={inputValue || ""}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Type a message..."
+            className="flex-1 rounded-xl px-4 py-2.5 
+              bg-gray-50 dark:bg-slate-900 
+              border border-gray-200 dark:border-2 dark:border-purple-800/50
+              focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-purple-600/50 
+              text-slate-900 dark:text-slate-100 
+              placeholder-slate-500 dark:placeholder-slate-400"
+          />
+          <button
+            onClick={handleSubmit}
+            disabled={!inputValue?.trim()}
+            className="p-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 
+              hover:to-blue-800 disabled:from-blue-400 disabled:to-blue-500
+              text-white rounded-xl transition-all duration-300 focus:outline-none 
+              focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 
+              dark:focus:ring-offset-slate-900 hover:scale-105"
+          >
+            <Send className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
