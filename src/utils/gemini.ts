@@ -9,19 +9,71 @@ if (!API_KEY) {
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
+let currentChatSession: any = null;
+let currentContext: string = "";
+
+// Utility function to remove markdown links while keeping the text
+function sanitizeLinks(content: string): string {
+  // Remove markdown links but keep the text: [text](url) -> text
+  const sanitizedContent = content.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+
+  // Remove plain URLs
+  return sanitizedContent.replace(/https?:\/\/[^\s]+/g, "");
+}
+
+function cleanJsonResponse(response: string): string {
+  // Find the first '[' and last ']' to extract just the JSON array
+  const start = response.indexOf("[");
+  const end = response.lastIndexOf("]") + 1;
+  if (start === -1 || end === 0) return response;
+
+  return response.slice(start, end);
+}
+
+export async function resetGeminiChat() {
+  try {
+    // Reset chat session
+    currentChatSession = null;
+
+    // Reset context
+    currentContext = "";
+
+    // Initialize a fresh model instance
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    currentChatSession = model.startChat({
+      generationConfig: {
+        maxOutputTokens: 1000,
+        temperature: 0.7,
+        topP: 0.8,
+        topK: 40,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Error resetting Gemini chat:", error);
+    throw error;
+  }
+}
+
 export async function generateResponse(
   message: string,
   previousMessages: Message[] = []
 ) {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  try {
+    if (!currentChatSession) {
+      await resetGeminiChat();
+    }
 
-  // Create a context summary from previous messages
-  const contextSummary = previousMessages
-    .map((msg) => `${msg.role}: ${msg.content}`)
-    .join("\n");
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  // Create a structured prompt that includes context and instructions
-  const systemPrompt = `You are an intelligent AI learning assistant. Your goal is to help users learn and understand concepts clearly.
+    // Create a context summary from previous messages
+    const contextSummary = previousMessages
+      .map((msg) => `${msg.role}: ${msg.content}`)
+      .join("\n");
+
+    // Create a structured prompt that includes context and instructions
+    const systemPrompt = `You are an intelligent AI learning assistant. Your goal is to help users learn and understand concepts clearly.
 
 Context of conversation:
 ${contextSummary}
@@ -40,113 +92,151 @@ Instructions:
 
 Please provide your response in a clear, structured format.`;
 
-  try {
-    const chat = model.startChat({
-      history: previousMessages.map((msg) => ({
-        role: msg.role === "user" ? "user" : "model",
-        parts: [{ text: msg.content }],
-      })),
-      generationConfig: {
-        maxOutputTokens: 1000,
-        temperature: 0.7,
-        topP: 0.8,
-        topK: 40,
-      },
-    });
-
-    const result = await chat.sendMessage([{ text: systemPrompt }]);
+    const result = await currentChatSession.sendMessage([
+      { text: systemPrompt },
+    ]);
     return result.response.text();
   } catch (error) {
     console.error("Chat error:", error);
+    await resetGeminiChat(); // Reset on error
     throw error;
   }
 }
 
-export async function generateRoadmap(
-  context: string,
-  previousMessages: Message[] = []
-): Promise<RoadmapStep[] | null> {
+export async function generateRoadmap(messages: Message[]) {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  // Extract key topics and concepts from chat history
-  const chatTopics = previousMessages
-    .map((msg) => msg.content)
-    .join(" ")
-    .toLowerCase();
+  // Get only the latest message regardless of role
+  const latestMessage = messages[messages.length - 1];
 
-  // Create a more focused prompt for roadmap generation
-  const roadmapPrompt = `Based on the following conversation context and current topic, create a detailed learning roadmap.
+  if (!latestMessage) {
+    return [];
+  }
 
-Chat History Context:
-${chatTopics}
+  const roadmapPrompt = `Based on the following content, create a structured learning roadmap:
 
-Current Focus Topic:
-${context}
+Content to analyze:
+${latestMessage.content}
 
 Instructions:
-1. Analyze the entire conversation to understand the user's learning goals
-2. Create a progressive learning path that builds upon discussed concepts
-3. Include practical resources and examples
-4. Ensure each step is actionable and measurable
-5. Link concepts to previously discussed topics where relevant
-
-Generate a structured learning roadmap as a JSON array with the following format:
+1. Create a step-by-step learning path
+2. For each step, include:
+   - A clear title
+   - Key concepts to understand
+   - Practical examples or exercises
+   - Relevant resources or documentation
+3. Format as JSON array with this structure:
 [
   {
-    "title": "Step Title (make it descriptive and action-oriented)",
+    "title": "Step Title",
     "descriptions": [
       {
-        "concept": "Specific Topic or Skill",
-        "description": "Clear, practical explanation with concrete steps",
-        "link": "Relevant learning resource URL",
-        "prerequisite": "Any prerequisite knowledge needed",
-        "estimatedTime": "Estimated time to complete this step"
+        "concept": "Concept Name",
+        "description": "Brief explanation",
+        "link": "Documentation or resource URL"
       }
     ]
   }
-]
-
-Ensure the response is valid JSON and includes 3-5 main sections with their respective descriptions.
-Each section should build upon the previous one and directly relate to the conversation context.`;
+]`;
 
   try {
-    const result = await model.generateContent([
-      {
-        text: roadmapPrompt,
-      },
-    ]);
+    const result = await model.generateContent([{ text: roadmapPrompt }]);
+    const content = result.response.text();
 
-    const text = result.response.text();
     try {
-      const cleanedText = text.replace(/```json\n?|\n?```/g, "").trim();
-      const roadmap = JSON.parse(cleanedText);
-
-      // Validate roadmap structure and relevance
-      if (!Array.isArray(roadmap) || roadmap.length === 0) {
-        throw new Error("Invalid roadmap structure");
-      }
-
-      // Ensure each step has required fields
-      const validatedRoadmap = roadmap.map((step: any) => ({
-        title: step.title,
-        descriptions: Array.isArray(step.descriptions)
-          ? step.descriptions.map((desc: any) => ({
-              concept: desc.concept || "",
-              description: desc.description || "",
-              link: desc.link || "",
-              prerequisite: desc.prerequisite || "",
-              estimatedTime: desc.estimatedTime || "",
-            }))
-          : [],
-      }));
-
-      return validatedRoadmap;
-    } catch (jsonError) {
-      console.error("Roadmap parsing error:", jsonError);
-      return null;
+      // Attempt to parse the entire response first
+      return JSON.parse(content);
+    } catch {
+      // If that fails, try to extract JSON using regex
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      return jsonMatch ? JSON.parse(jsonMatch[0]) : [];
     }
   } catch (error) {
     console.error("Roadmap generation error:", error);
-    return null;
+    return [];
+  }
+}
+
+export async function generateNotes(messages: Message[]): Promise<string> {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    // Get the latest conversation context
+    const latestMessages = messages.slice(-10); // Get last 10 messages for context
+
+    // Separate and format messages by role
+    const formattedMessages = latestMessages.reduce(
+      (acc, msg) => {
+        const role = msg.role === "assistant" ? "Explanations" : "Questions";
+        acc[role] = [...(acc[role] || []), sanitizeLinks(msg.content)];
+        return acc;
+      },
+      { Questions: [], Explanations: [] } as Record<string, string[]>
+    );
+
+    const notesPrompt = `As a learning assistant, create comprehensive study notes from our latest conversation.
+
+Context:
+Latest Questions:
+${formattedMessages.Questions.map((q) => `- ${q}`).join("\n")}
+
+Latest Explanations:
+${formattedMessages.Explanations.join("\n\n")}
+
+Instructions:
+1. Format the notes in this structure:
+
+# 📚 Study Notes
+[Brief introduction about the main topic]
+
+## 🎯 Key Learning Objectives
+- [List main learning objectives]
+
+## 📖 Core Concepts
+### [Concept 1]
+- Detailed explanation
+- Examples
+- Code snippets (if applicable)
+
+### [Concept 2]
+[Similar structure...]
+
+## 💡 Practical Examples
+- Real-world applications
+- Code demonstrations
+- Use cases
+
+## 🔗 Related Concepts
+- Connections to other topics
+- Prerequisites
+- Advanced topics to explore
+
+## 📝 Summary
+- Key takeaways
+- Main points to remember
+
+Please generate concise, well-organized notes focusing on the latest discussion points.`;
+
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: notesPrompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.8,
+        maxOutputTokens: 2048,
+      },
+    });
+
+    const response = await result.response;
+    const text = response.text();
+
+    if (!text) {
+      throw new Error("Empty response from Gemini");
+    }
+
+    return text;
+  } catch (error) {
+    console.error("Error generating notes:", error);
+    throw new Error("Failed to generate notes. Please try again.");
   }
 }
