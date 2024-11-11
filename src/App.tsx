@@ -22,7 +22,7 @@ const Header = memo(() => {
               <Brain className="h-6 w-6 text-white" />
             </div>
             <h1 className="font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-              Learning Roadmap
+              Learning Buddy - AI-Powered Learning Assistant
             </h1>
           </div>
           <div className="flex items-center space-x-5">
