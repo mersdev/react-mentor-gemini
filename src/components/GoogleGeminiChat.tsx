@@ -315,6 +315,12 @@ export function GoogleGeminiChat({
             type="text"
             value={inputValue || ""}
             onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
+            }}
             placeholder="Type a message..."
             className="flex-1 rounded-xl px-4 py-2.5 
               bg-gray-50 dark:bg-slate-900 
