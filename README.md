@@ -1,101 +1,100 @@
 # Learning Buddy - AI-Powered Learning Assistant
 
 <div align="center">
-  <img src="public/vite.svg" alt="Learning Buddy Logo" width="120" />
+  <img src="public/favicon.svg" alt="Learning Buddy Logo" width="120" />
   <h3>Your Personal AI Learning Companion</h3>
   <p>Powered by Google's Gemini AI</p>
 </div>
 
-## 🌟 Features
+## 🌐 Live Demo
 
-- **Intelligent Chat Interface**: Natural conversations with AI to explain concepts
-- **Dynamic Learning Roadmaps**: Automatically generated learning paths based on your interests
-- **Interactive Concepts**: Click on concepts to dive deeper into specific topics
-- **Beautiful UI/UX**: Modern, responsive design with dark mode support
-- **Context-Aware**: AI remembers conversation context for better assistance
-- **Code Examples**: Syntax-highlighted code snippets with language detection
+Try out Learning Buddy here: [Live Demo](https://mersdev.github.io/react-mentor-gemini/)
 
-## 🚀 Tech Stack
+## ✨ Key Features
+
+### 🤖 Intelligent Chat Interface
+
+- Natural language conversations with Gemini AI
+- Context-aware responses that remember previous discussions
+- Real-time markdown rendering with syntax highlighting
+- Smart code block formatting with language detection
+- Animated message transitions and loading states
+
+### 📚 Dynamic Learning Roadmap
+
+- Automatically generates personalized learning paths
+- Interactive concept exploration
+- Resource recommendations with direct links
+- Progress tracking and step-by-step guidance
+- Visual hierarchy of learning objectives
+
+### 📝 Smart Notes Generation
+
+- Automatic study notes creation from conversations
+- Well-structured formatting with headers and sections
+- Code examples and practical demonstrations
+- Key concepts highlighting
+- One-click notes regeneration
+
+### 🎨 Modern UI/UX
+
+- Responsive design for all devices
+- Dark/Light mode with system preference detection
+- Smooth animations and transitions
+- Custom scrollbars and visual feedback
+- Gradient accents and modern styling
+
+### 💾 Data Persistence
+
+- Local storage for chat history
+- Automatic context saving
+- Session management
+- Easy chat clearing and reset
+
+## 🛠️ Technical Stack
 
 - React 18 with TypeScript
-- Vite for blazing-fast builds
+- Vite for development and building
 - Tailwind CSS for styling
 - Google Gemini AI API
-- Markdown rendering with syntax highlighting
-- Local storage for chat persistence
+- Framer Motion for animations
+- React Markdown for content rendering
 
-## 📦 Installation
+## 🚀 Getting Started
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/yourusername/learning-buddy.git
-cd learning-buddy
-```
-
+1. Clone the repository
 2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the root directory:
+3. Create `.env` file with your Gemini API key:
 
 ```env
-VITE_GEMINI_API_KEY=your_gemini_api_key_here
+VITE_GEMINI_API_KEY=your_key_here
 ```
 
-4. Start the development server:
+4. Start development server:
 
 ```bash
 npm run dev
 ```
 
-## 🔧 Configuration
-
-The project uses Vite for configuration. Key files:
-
-- `vite.config.ts` - Vite configuration
-- `tailwind.config.js` - Tailwind CSS configuration
-- `tsconfig.json` - TypeScript configuration
-
-## 🌐 Deployment
-
-To deploy to GitHub Pages:
-
-```bash
-npm run deploy
-```
-
-The site will be available at: `https://yourusername.github.io/learning-buddy/`
-
-## 🎨 UI Components
-
-- **Chat Interface**: Real-time conversation with AI
-- **Learning Roadmap**: Dynamic learning path generation
-- **Code Blocks**: Syntax highlighting with language detection
-- **Dark Mode**: Automatic theme switching
-
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Open Pull Request
 
-## 📝 License
+## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - See LICENSE file for details
 
 ## 🙏 Acknowledgments
 
 - Google Gemini AI for the powerful language model
 - React and Vite communities
 - All contributors and users
-
-## 📧 Contact
-
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
-
-Project Link: [https://github.com/yourusername/learning-buddy](https://github.com/yourusername/learning-buddy)
