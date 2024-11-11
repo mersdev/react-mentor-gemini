@@ -26,6 +26,12 @@ const Header = memo(() => {
             </h1>
           </div>
           <div className="flex items-center space-x-5">
+            <div className="flex items-center space-x-2.5 text-sm bg-blue-50 dark:bg-blue-900/30 px-4 py-2 rounded-xl">
+              <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <span className="text-blue-700 dark:text-blue-300">
+                Powered by Gemini AI
+              </span>
+            </div>
             <button
               onClick={toggleTheme}
               className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-purple-900/20 transition-colors"
@@ -37,12 +43,6 @@ const Header = memo(() => {
                 <Moon className="h-5 w-5 text-blue-600" />
               )}
             </button>
-            <div className="flex items-center space-x-2.5 text-sm bg-blue-50 dark:bg-blue-900/30 px-4 py-2 rounded-xl">
-              <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              <span className="text-blue-700 dark:text-blue-300">
-                Powered by Gemini AI
-              </span>
-            </div>
           </div>
         </div>
       </div>
