@@ -245,24 +245,23 @@ export function NotesView({ messages }: NotesViewProps) {
       variants={fadeIn}
       className="h-full overflow-y-auto px-6 md:px-12 py-8 custom-scrollbar bg-white dark:bg-gray-900 relative"
     >
-      <div className="max-w-[750px] mx-auto">
+      <div className="max-w-[750px] mx-auto relative pb-16">
         <div className="prose prose-lg dark:prose-invert max-w-none">
           <ReactMarkdown components={markdownComponents} className="space-y-6">
             {notes}
           </ReactMarkdown>
         </div>
-      </div>
 
-      {/* Floating Refresh Button */}
-      <button
-        onClick={handleRefresh}
-        disabled={isLoading}
-        className="fixed bottom-6 right-6 p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg 
-          transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
-        title="Refresh notes"
-      >
-        <RefreshCw className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`} />
-      </button>
+        <button
+          onClick={handleRefresh}
+          disabled={isLoading}
+          className="absolute bottom-0 right-0 p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg 
+            transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
+          title="Refresh notes"
+        >
+          <RefreshCw className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`} />
+        </button>
+      </div>
     </motion.div>
   );
 }
